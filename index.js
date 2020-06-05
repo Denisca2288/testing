@@ -1,11 +1,24 @@
-var app = require('express')();
-var http = require('http').createServer(app);
+var express = require("express");
+var app = express();
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1>');
-});
+app.set("view engine", "ejs");
 
-http.listen(3000, () => {
-  console.log('listening on *:3000');
-  console.log(http)
-});
+app.use(express.static("public"));
+
+app.get("/", (req, res)=>{
+	res.render("index");
+})
+
+server = app.listen("3000", ()=>{
+	console.log("Server is running!");
+})
+
+var io = require("socket.io")(server);
+
+io.on("connection", socket => {
+	console.log("New user!");
+	socket.on("setting_name", function(data){
+		console.log("Setted name is " + data.name);
+		socket.emit("test", (mess: "Hello, " + data.name + "!"));
+	})
+})
